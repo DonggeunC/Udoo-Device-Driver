@@ -13,3 +13,7 @@
 - No such device or address 오류 -> 디바이스 파일은 있으나 디바이스 드라이버를 적재하지않음. 
 
 - No such file or directory 오류 -> 디바이스 드라이버는 적재했으나 디바이스 파일이 존재하지 않음 
+
+- p184에서 디바이스 드라이버인 dev와 어플리케이션인 app을 만들어 dev를 적재하고 app을 통해 제어할 수 있도록 함
+
+- p184_led에서 led_app argv[1]을 이용하여 led를 제어하고 그 상태를 출력하도록 코드를 작성
