@@ -17,3 +17,5 @@
 - p184에서 디바이스 드라이버인 dev와 어플리케이션인 app을 만들어 dev를 적재하고 app을 통해 제어할 수 있도록 함
 
 - p184_led에서 led_app argv[1]을 이용하여 led를 제어하고 그 상태를 출력하도록 코드를 작성
+
+- led_app.c에서 read나 write함수를 이용하여 매개변수 char의 포인터형으로 보내는데 이 부분을 이용하여 led를 제어하고자 한다면 led_dev.c에서 led_write의 매개변수에 *buf 를 사용해주어야 한다
