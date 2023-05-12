@@ -22,6 +22,8 @@ __attribute__((section("__versions"))) = {
 	{ 0x47229b5c, __VMLINUX_SYMBOL_STR(gpio_request) },
 	{ 0xfe990052, __VMLINUX_SYMBOL_STR(gpio_free) },
 	{ 0x180b4c11, __VMLINUX_SYMBOL_STR(__register_chrdev) },
+	{ 0x5f419491, __VMLINUX_SYMBOL_STR(gpiod_get_raw_value) },
+	{ 0x76d07d6e, __VMLINUX_SYMBOL_STR(gpiod_direction_input) },
 	{ 0xe4c4b28f, __VMLINUX_SYMBOL_STR(gpiod_direction_output) },
 	{ 0xf816c866, __VMLINUX_SYMBOL_STR(gpio_to_desc) },
 	{ 0xefd6cf06, __VMLINUX_SYMBOL_STR(__aeabi_unwind_cpp_pr0) },

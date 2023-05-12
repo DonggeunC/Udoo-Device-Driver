@@ -24,10 +24,10 @@ static int led_request(void)
 	int i;
 	for (i = 0; i < ARRAY_SIZE(led); i++) {
 		ret = gpio_request(led[i], "gpio led");
-			if(ret<0){
-				printk("#### FAILED Request gpio %d. error : %d \n", led[i], ret);
-				break;
-			} 
+		if(ret<0){
+			printk("#### FAILED Request gpio %d. error : %d \n", led[i], ret);
+			break;
+		} 
 	}
 	return ret;
 }
@@ -49,61 +49,94 @@ static void led_write(unsigned long data)
 	printk("#### %s, data = %ld\n", __FUNCTION__, data);
 #endif
 }
-static int call_open(struct inode *inode,struct file *filp){
+void led_read(char* led_data)
+{
+	int i;
+	char data=0;
+	char temp;
+	for(i=0;i<4;i++)
+	{
+  		gpio_direction_input(led[i]); //error led all turn off
+		temp = gpio_get_value(led[i]) << i;
+		data |= temp;
+	}
+/*	
+	for(i=3;i>=0;i--)
+	{
+		gpio_direction_input(led[i]); //error led all turn off
+		temp = gpio_get_value(led[i]);
+		data |= temp;
+		if(i==0)
+			break;
+		data <<= 1;  //data <<= 1;
+	}
+*/
+#if DEBUG
+	printk("#### %s, data = %ld\n", __FUNCTION__,(long)data);
+#endif
+	*led_data = data;
+	led_write(data);
+	return;
+}
+static int leddev_open(struct inode *inode,struct file *filp){
 	int num = MINOR(inode->i_rdev);
-	printk("call open -> minor : %d\n",num);
+	printk("leddev open -> minor : %d\n",num);
 	num = MAJOR(inode->i_rdev);
-	printk("call open -> major : %d\n",num);
+	printk("leddev open -> major : %d\n",num);
 	return 0;
 }
-static loff_t call_llseek(struct file *filp, loff_t off, int whence){
-	printk("call llseek -> off : %08X, whence : %08X\n",(unsigned int)off,whence);
+static loff_t leddev_llseek(struct file *filp, loff_t off, int whence){
+	printk("leddev llseek -> off : %08X, whence : %08X\n",(unsigned int)off,whence);
 	return 0x23;
 }
-static ssize_t call_read(struct file *filp, char* buf, size_t count, loff_t *f_pos){
-	printk("call read -> buf : %08X, count : %08X\n",(unsigned int)buf,count);
-	return 0x33;
+static ssize_t leddev_read(struct file *filp, char* buf, size_t count, loff_t *f_pos){
+	printk("leddev read -> buf : %08X, count : %08X\n",(unsigned int)*buf,count);
+	led_read(buf);
+	return *buf;
 }
-static ssize_t call_write(struct file *filp, const char* buf, size_t count, loff_t *f_pos){
-	printk("call write -> buf : %08X, count : %08X\n",(unsigned int)*buf,count);
+static ssize_t leddev_write(struct file *filp, const char* buf, size_t count, loff_t *f_pos){
+	printk("leddev write -> buf : %08X, count : %08X\n",(unsigned int)*buf,count);
 	led_write((unsigned long)*buf);
 	return *buf;
 }
-static long call_ioctl(struct file *filp,unsigned int cmd,unsigned long arg){
-	printk("call ioctl -> cmd : %08X, arg : %08X\n",cmd,(unsigned int)arg);
+static long leddev_ioctl(struct file *filp,unsigned int cmd,unsigned long arg){
+	printk("leddev ioctl -> cmd : %08X, arg : %08X\n",cmd,(unsigned int)arg);
 	return 0x53;
 }
-static int call_release(struct inode *inode,struct file *filp){
-	printk("call release\n");
+static int leddev_release(struct inode *inode,struct file *filp){
+	printk("leddev release\n");
 	return 0;
 }
-struct file_operations call_fops =
+struct file_operations leddev_fops =
 {
 	.owner = THIS_MODULE,
-	.llseek = call_llseek,
-	.read = call_read,
-	.write = call_write,
-	.unlocked_ioctl = call_ioctl,
-	.open = call_open,
-	.release = call_release,	//close
+	.llseek = leddev_llseek,
+	.read = leddev_read,
+	.write = leddev_write,
+	.unlocked_ioctl = leddev_ioctl,
+	.open = leddev_open,
+	.release = leddev_release,	//close
 };
-static int call_init(void){
+static int leddev_init(void){
 	int result;
-	printk("call call_init \n");
-	result = register_chrdev(CALL_DEV_MAJOR,CALL_DEV_NAME, &call_fops);
+	printk("call leddev_init \n");
+	result = register_chrdev(CALL_DEV_MAJOR,CALL_DEV_NAME, &leddev_fops);
 	if(result <0) return result;
 	led_free();
-	led_request();
+	result = led_request();
+	if(result < 0){
+		return result;
+	}
 	return 0;
 }
-static void call_exit(void){
-	printk("call call_exit \n");
+static void leddev_exit(void){
+	printk("call leddev_exit \n");
 	led_write(0);
 	led_free();
 	unregister_chrdev(CALL_DEV_MAJOR,CALL_DEV_NAME);
 }
 
-module_init(call_init);
-module_exit(call_exit);
+module_init(leddev_init);
+module_exit(leddev_exit);
 MODULE_LICENSE("Dual BSD/GPL");
 

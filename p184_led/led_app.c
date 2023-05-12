@@ -34,10 +34,14 @@ int main(int argc,char* argv[]){
 		ret = lseek(dev,0x20,SEEK_SET);
 //		printf("ret = %08X\n",ret);
 //		printf("3) read function call\n");
-		ret = read(dev,(char*)0x30,0x31);
 //		printf("ret = %08X\n",ret);
 //		printf("4) write function call\n");
 		ret = write(dev,&argint,0x41);
+		if(ret < 0){
+			perror("write()");
+			return 2;
+		}
+		ret = read(dev,&argint,0x31);
 		puts("1:2:3:4");
 		int i=0;
 		for(i=0;i<4;i++)
