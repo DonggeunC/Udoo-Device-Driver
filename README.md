@@ -19,3 +19,7 @@
 - p184_led에서 led_app argv[1]을 이용하여 led를 제어하고 그 상태를 출력하도록 코드를 작성
 
 - led_app.c에서 read나 write함수를 이용하여 매개변수 char의 포인터형으로 보내는데 이 부분을 이용하여 led를 제어하고자 한다면 led_dev.c에서 led_write의 매개변수에 *buf 를 사용해주어야 한다
+
+- 어플리케이션의 read()는 커널로부터 정보를 읽어옴 - 커널의 read()는 어플리케이션에 정보를 write함(put_user, copy_to_user 함수)
+
+- 어플리케이션의 write()는 커널에 정보를 보냄 - 커널의 write()는 어플리케이션의 정보를 read함(get_user, copy_from_user 함수)
