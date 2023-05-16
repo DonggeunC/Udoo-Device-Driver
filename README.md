@@ -39,3 +39,9 @@
 - 장치 파일을 통하여 사용자 공간과 커널 공간을 연결
 
 ![image](https://github.com/DonggeunC/Udoo-Device-Driver/assets/124149731/7ef4b3e4-9fb9-4c94-85f8-c8e43ba483b0)
+
+## 디바이스 드라이버 타이머 인터럽트
+
+- pdata->timer.expires = get_jiffies_64() + timeover; -> timeover는 100hz, jiffies는 헤르츠에 따라 쌓이는 전역변수 - 현재 시간에 100hz(1초)가 지난 순간 expire
+
+- expire가 되면 timer.function의 함수 실행
