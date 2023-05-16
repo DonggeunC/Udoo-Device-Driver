@@ -45,3 +45,5 @@
 - pdata->timer.expires = get_jiffies_64() + timeover; -> timeover는 100hz, jiffies는 헤르츠에 따라 쌓이는 전역변수 - 현재 시간에 100hz(1초)가 지난 순간 expire
 
 - expire가 되면 timer.function의 함수 실행
+
+- KERNEL_TIMER_MANAGER 구조체의 멤버변수인 led를 write하여 led가 켜지는 방식을 key입력으로 전환 가능
