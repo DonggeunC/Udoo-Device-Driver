@@ -36,4 +36,6 @@
 
 - 디바이스 드라이버의 주번호는 32비트 중 상위 12비트, 부번호는 하위 20비트이다.
 
+- 장치 파일을 통하여 사용자 공간과 커널 공간을 연결
+
 ![image](https://github.com/DonggeunC/Udoo-Device-Driver/assets/124149731/7ef4b3e4-9fb9-4c94-85f8-c8e43ba483b0)
