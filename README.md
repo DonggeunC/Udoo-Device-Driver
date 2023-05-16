@@ -35,3 +35,5 @@
 - Read()에서는 read작업을 실행 후 put_user()를 통해 어플리케이션에 데이터 보냄
 
 - 디바이스 드라이버의 주번호는 32비트 중 상위 12비트, 부번호는 하위 20비트이다.
+
+![image](https://github.com/DonggeunC/Udoo-Device-Driver/assets/124149731/7ef4b3e4-9fb9-4c94-85f8-c8e43ba483b0)
