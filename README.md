@@ -48,4 +48,4 @@
 
 - KERNEL_TIMER_MANAGER 구조체의 멤버변수인 led를 write하여 led가 켜지는 방식을 key입력으로 전환 가능
 
-- p306 ioctl파일의 dev.c에서 배열의 인덱스로 나열된 2진수 변환 -> for문 사용하여 값이 들어올 때 인덱스 i+1로 계산
+- p306 ioctl폴더의 dev.c에서 배열의 인덱스로 나열된 2진수 변환 -> for문 사용하여 값이 들어올 때 인덱스 i+1로 계산
