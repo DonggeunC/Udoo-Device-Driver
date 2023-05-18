@@ -1,4 +1,5 @@
 #include <linux/init.h>
+#include <linux/string.h>
 #include <linux/wait.h>
 #include <linux/interrupt.h>
 #include <linux/irq.h>
@@ -141,16 +142,16 @@ int irq_init(struct file * filp){
 static int ledkeydev_open(struct inode *inode,struct file *filp){
 	int num = MINOR(inode->i_rdev);
 	int num1 = MAJOR(inode->i_rdev);
-	int i;
 	ISR_INFO* pIsrInfo;
 	pIsrInfo = (ISR_INFO*)kmalloc(sizeof(ISR_INFO),GFP_KERNEL);
 
 	printk("ledkeydev open -> minor : %d\n",num);
 	printk("ledkeydev open -> major : %d\n",num1);
-	pIsrInfo->sw_no = 0;
+/*	pIsrInfo->sw_no = 0;
 	for(i=0;i<8;i++){
 		pIsrInfo->sw_irq[i] = 0;
-	}
+	}*/
+	memset(pIsrInfo,0x00,sizeof(ISR_INFO));
 	filp->private_data = (void*)pIsrInfo;
 	irq_init(filp);
 	
@@ -162,9 +163,11 @@ static ssize_t ledkeydev_read(struct file *filp, char* buf, size_t count, loff_t
 #if DEBUG
 	printk("key read -> buf : %08X, count : %08X\n",(unsigned int)*buf,count);
 #endif
-	if(!(filp->f_flags & O_NONBLOCK)){
+	if(!(filp->f_flags & O_NONBLOCK)){			//Block mode Check
 		if(pSw_no->sw_no == 0)
 			interruptible_sleep_on(&WaitQueue_Read);
+//			wait_event_interruptible(WaitQueue_Read,pSw_no->sw_no);
+//			wait_event_interruptible_timeout(WaitQueue_Read,pSw_no->sw_no,100);
 	}
 	ret = copy_to_user(buf,&pSw_no->sw_no,count);
 	pSw_no->sw_no = 0;
@@ -174,14 +177,14 @@ static ssize_t ledkeydev_read(struct file *filp, char* buf, size_t count, loff_t
 }
 static ssize_t ledkeydev_write(struct file *filp, const char* buf, size_t count, loff_t *f_pos){
 	int ret = 0;
-	ISR_INFO* pSw_no = (ISR_INFO*)filp->private_data;
+	char kbuf;
 #if DEBUG
 	printk("ledkeydev write -> buf : %08X, count : %08X\n",(unsigned int)*buf,count);
 #endif
-	if((ret = copy_from_user(&pSw_no->sw_no,buf,count))<0)
+	if((ret = copy_from_user(&kbuf,buf,count))<0)
 		return -ENOMEM;
-	led_write(pSw_no->sw_no);
-	return pSw_no->sw_no;
+	led_write(kbuf);
+	return kbuf;
 }
 static long ledkeydev_ioctl(struct file *filp,unsigned int cmd,unsigned long arg){
 #if DEBUG
