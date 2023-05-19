@@ -65,3 +65,17 @@
 - poll 함수는 select 함수와 달리 파일 디스크립터의 크기에 제한이 없으며, 사용자가 직접 파일 디스크립터 배열을 관리할 필요가 없고 블로킹 되지않고 즉시 반환됨
 
 - poll_wait 함수가 blocking check 부분을 다루고 있으므로 interruptible_sleep_on함수 생략할 수도 있음
+
+## 디바이스 드라이버 적재
+
+- 커널 홈에서 drivers 폴더로 들어가서 char폴더 찾음 -> char형 디바이스 드라이버를 만들었기 때문
+
+- char폴더의 Kconfig파일 편집 -> source추가 -> source "drivers/char/[만들고자 하는 드라이버폴더]/Kconfig"
+
+- char폴더의 Makefile 편집 -> obj추가 -> obj-$(CONFIG_[만들고자 하는 드라이버폴더]) += [만들고자 하는 드라이버폴더]/
+
+- 드라이버는 소스파일과 메이크파일, Kconfig 3가지를 보유하고 있어야 함
+
+- 드라이버 소스파일의 module init의 함수에 __init 추가, module exit의 함수에 __exit 추가
+
+-
