@@ -78,4 +78,4 @@
 
 - 드라이버 소스파일의 module init의 함수에 __init 추가, module exit의 함수에 __exit 추가
 
--
+- Kconfig와 Makefile 작성 후 make menuconfig에서 작성한 드라이버 M모드로 등록
