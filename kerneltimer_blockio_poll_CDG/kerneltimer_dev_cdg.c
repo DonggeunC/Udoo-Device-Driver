@@ -66,7 +66,6 @@ irqreturn_t sw_isr(int irq, void* dev_id){
 	wake_up_interruptible(&WaitQueue_Read);
 	return IRQ_HANDLED;
 }
-/*
 static int led_init(void)
 {
 	int ret = 0;
@@ -82,7 +81,6 @@ static int led_init(void)
 	}
 	return ret;
 }
-*/
 static int kkey_init(void)
 {
 	int ret = 0;
@@ -91,22 +89,22 @@ static int kkey_init(void)
 	for (i = 0; i < ARRAY_SIZE(key); i++) {
 		sw_irq[i] = gpio_to_irq(key[i]);
 	}
-	return ret;
+return ret;
 }
-/*static void led_exit(void)
-  {
+static void led_exit(void)
+{
   int i;
   for (i = 0; i < ARRAY_SIZE(led); i++){
-  gpio_free(led[i]);
+	  gpio_free(led[i]);
   }
-  }
-  static void key_exit(void)
-  {
+ }
+static void key_exit(void)
+{
   int i;
   for (i = 0; i < ARRAY_SIZE(key); i++){
-  gpio_free(key[i]);
+	  gpio_free(key[i]);
   }
-  }*/
+}
 static unsigned int ledkey_poll(struct file * filp, poll_table * wait){
 	unsigned int mask = 0;
 	printk("_key : %ld/n",(wait->_key & POLLIN));
@@ -169,12 +167,10 @@ void kerneltimer_registertimer(KERNEL_TIMER_MANAGER *pdata, unsigned long timeov
 	pdata->timer.function = kerneltimer_timeover;
 	add_timer( &(pdata->timer) );
 }
-/*
 static void key_read(char * key_data)
 {
 	int i;
 	char data=0;
-	//	char temp;
 	for(i=0;i<ARRAY_SIZE(key);i++)
 	{
 		if(gpio_get_value(key[i]))
@@ -182,15 +178,13 @@ static void key_read(char * key_data)
 			data = i+1;
 			break;
 		}
-		//		temp = gpio_get_value(key[i]) << i;
-		//		data |= temp;
 	}
 #if DEBUG
 	printk("#### %s, data = %d\n", __FUNCTION__, data);
 #endif
 	*key_data = data;
 	return;
-}*/
+}
 static int ledkey_open (struct inode *inode, struct file *filp)
 {
 	int num0 = MAJOR(inode->i_rdev); 
@@ -214,6 +208,7 @@ static ssize_t ledkey_read(struct file *filp, char *buf, size_t count, loff_t *f
 		if(sw_no == 0)
 			interruptible_sleep_on(&WaitQueue_Read);
 	}
+	key_read(&sw_no);
 	ret = copy_to_user(buf,&sw_no,count);
 	sw_no = 0;
 	if(ret < 0)
@@ -261,7 +256,6 @@ static long ledkey_ioctl (struct file *filp, unsigned int cmd, unsigned long arg
 	}
 	switch( cmd )
 	{
-		//		char buf;
 		case TIMER_START :
 			if(!timer_pending(&(pKtm->timer)))
 				add_timer(&(pKtm->timer));	
@@ -272,7 +266,7 @@ static long ledkey_ioctl (struct file *filp, unsigned int cmd, unsigned long arg
 			break;
 		case TIMER_VALUE :
 			result = copy_from_user(&ctrl_info,(void*)arg,size);
-			pKtm->time_val = ctrl_info.timer_val;
+			pKtm->time_val = (int)ctrl_info.timer_val;
 			break;
 		default:
 			err =-E2BIG;
@@ -290,7 +284,7 @@ static int ledkey_release (struct inode *inode, struct file *filp)
 	if(timer_pending(&(pKtm->timer)))
 		del_timer(&(pKtm->timer));
 	if(pKtm != NULL){
-		kfree(filp->private_data);
+		kfree(pKtm);
 	}
 
 	return 0;
@@ -316,8 +310,8 @@ static int ledkey_init(void)
 	result = register_chrdev( LEDKEY_DEV_MAJOR, LEDKEY_DEV_NAME, &ledkey_fops);
 	if (result < 0) return result;
 
-	//	led_init();
-	//	kkey_init();
+	led_init();
+	kkey_init();
 	return 0;
 }
 
@@ -325,8 +319,8 @@ static void ledkey_exit(void)
 {
 	printk( "call ledkey_exit \n" );    
 	unregister_chrdev( LEDKEY_DEV_MAJOR, LEDKEY_DEV_NAME );
-	//	led_exit();
-	//	key_exit();
+	led_exit();
+	key_exit();
 }
 
 module_init(ledkey_init);

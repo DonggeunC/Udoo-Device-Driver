@@ -6,7 +6,7 @@ typedef struct
 {
 	    unsigned long size;
 	    unsigned char buff[128];
-		int timer_val;
+		unsigned long timer_val;
 } __attribute__((packed)) keyled_data;
 
 #define TIMER_START    _IO(TIMER_MAGIC, 0) 
